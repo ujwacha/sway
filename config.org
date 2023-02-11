@@ -1,0 +1,481 @@
+#+TITLE: Sway Config
+#+PROPERTY: header-args :tangle config
+#+Author: Ujwol Achary
+
+* setting global vars
+** Home Row
+ Home row direction keys, like vim
+#+BEGIN_SRC conf :tangle yes
+set $mod Mod4
+set $left h
+set $down j
+set $up k
+set $right l
+#+END_SRC
+
+** terminal
+ Your preferred terminal emulator
+#+BEGIN_SRC conf :tangle yes
+set $term foot 
+
+#+END_SRC
+
+** Launcher
+Your preferred application launcher
+ Note: pass the final command to swaymsg so that the resulting window can be opened
+ on the original workspace that the command was run on.
+#+BEGIN_SRC conf :tangle yes
+set $menu dmenu_path | dmenu | xargs swaymsg exec --
+#+END_SRC
+
+* Output
+this section is for monitor
+** Wallpaper
+#+BEGIN_SRC conf :tangle yes
+output * bg /home/light/.config/sway/wall fill
+#+END_SRC
+
+** Multi monitor
+ You can get the names of your outputs by running: swaymsg -t get_outputs
+
+Example configuration:
+
+#+BEGIN_SRC conf :tangle yes
+          #output HDMI-A-1 resolution 1920x1080 position 1920,0
+#+END_SRC 
+
+* Idle
+set up what happens when sway is idle for a long time
+
+depends on *swayidle*, *swaylock* and *swaymsg*
+
+#+BEGIN_SRC conf :tangle yes
+ exec swayidle -w \
+          timeout 300 'swaylock -f -i /home/light/.config/sway/wall' \
+          timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
+          before-sleep 'swaylock -f -i /home/light/.config/sway/wall'
+
+#+END_SRC
+
+ This will lock your screen after 300 seconds of inactivity, then turn off
+ your displays after another 300 seconds, and turn your screens back on when
+ resumed. It will also lock your screen before your computer goes to sleep.
+
+* Input configuration
+ You can get the names of your inputs by running: swaymsg -t get_inputs Read `man 5 sway-input` for more information about this section.
+
+** Touchpad
+set natural scrolling, tap, dwt (IDK what dwt means) and middle_emulation
+#+BEGIN_SRC conf :tangle yes
+input "2:7:SynPS/2_Synaptics_TouchPad" {
+       dwt enabled
+       tap enabled
+       natural_scroll enabled
+       middle_emulation enabled
+}
+#+END_SRC
+
+** Keyboard
+swao ctrl and caps lock to prevent emacs pinky
+
+#+BEGIN_SRC conf :tangle yes
+input "type:keyboard" {
+    xkb_options ctrl:swapcaps
+}
+#+END_SRC
+
+* Default Key Bindings
+** start terminal
+start terminal
+#+BEGIN_SRC conf :tangle yes
+    bindsym $mod+Return exec $term
+#+END_SRC
+
+** Kill focused window
+kill focused window
+#+BEGIN_SRC conf :tangle yes
+    bindsym $mod+Shift+q kill
+#+END_SRC
+
+** Start launcler
+dmenu
+#+BEGIN_SRC conf :tangle yes
+  bindsym $mod+d exec $menu
+#+END_SRC
+
+** Mouse for dragging
+     Drag floating windows by holding down $mod and left mouse button.
+     Resize them with right mouse button + $mod.
+     Despite the name, also works for non-floating windows.
+     Change normal to inverse to use left mouse button for resizing and right
+
+     #+BEGIN_SRC conf :tangle yes
+    floating_modifier $mod normal
+     #+END_SRC
+     
+** Reload config file
+reload
+#+BEGIN_SRC conf :tangle yes
+    bindsym $mod+Shift+c reload
+#+END_SRC
+
+** Exit sway
+Exit sway but display the menu to ask as well
+
+it logs you out of your wayland session
+
+#+BEGIN_SRC conf :tangle yes
+    bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
+#+END_SRC
+
+** Moving Around
+*** Move your focus around
+ use vim keys
+ #+BEGIN_SRC conf :tangle yes
+    bindsym $mod+$left focus left
+    bindsym $mod+$down focus down
+    bindsym $mod+$up focus up
+    bindsym $mod+$right focus right
+ #+END_SRC
+
+use arrow keys
+#+BEGIN_SRC conf :tangle yes
+    bindsym $mod+Left focus left
+    bindsym $mod+Down focus down
+    bindsym $mod+Up focus up
+    bindsym $mod+Right focus right
+#+END_SRC
+ 
+
+*** Move focused winow around
+with vim keys
+#+BEGIN_SRC conf :tangle yes
+    bindsym $mod+Shift+$left move left
+    bindsym $mod+Shift+$down move down
+    bindsym $mod+Shift+$up move up
+    bindsym $mod+Shift+$right move right
+
+#+END_SRC
+
+with arrow keys
+#+BEGIN_SRC conf :tangle yes
+    bindsym $mod+Shift+Left move left
+    bindsym $mod+Shift+Down move down
+    bindsym $mod+Shift+Up move up
+    bindsym $mod+Shift+Right move right
+#+END_SRC
+
+* Workspaces
+** Setting up variables to represent workspaces
+these are the variables
+#+BEGIN_SRC conf :tangle yes
+	set $ws1 "1"
+  	set $ws2 "2"
+	set $ws3 "3"
+	set $ws4 "4"
+	set $ws5 "5"
+	set $ws6 "6"
+	set $ws7 "7"
+	set $ws8 "8"
+	set $ws9 "9"
+	set $ws10 "0"
+#+END_SRC
+NOTE: workspaces can have any name you want, not just numbers
+** Switch to workspaces
+these keybindings help in switching to workspaces
+#+BEGIN_SRC conf :tangle yes
+    bindsym $mod+1 workspace number $ws1
+    bindsym $mod+2 workspace number $ws2
+    bindsym $mod+3 workspace number $ws3
+    bindsym $mod+4 workspace number $ws4
+    bindsym $mod+5 workspace number $ws5
+    bindsym $mod+6 workspace number $ws6
+    bindsym $mod+7 workspace number $ws7
+    bindsym $mod+8 workspace number $ws8
+    bindsym $mod+9 workspace number $ws9
+    bindsym $mod+0 workspace number $ws10
+    bindsym $mod+semicolon workspace prev
+    bindsym $mod+apostrophe workspace next
+    bindsym $mod+Tab workspace back_and_forth
+#+END_SRC
+
+** Move focused window to a workspace
+these keybindings move wondows to different workspaces
+#+BEGIN_SRC conf :tangle yes
+    bindsym $mod+Shift+1 move container to workspace number $ws1
+    bindsym $mod+Shift+2 move container to workspace number $ws2
+    bindsym $mod+Shift+3 move container to workspace number $ws3
+    bindsym $mod+Shift+4 move container to workspace number $ws4
+    bindsym $mod+Shift+5 move container to workspace number $ws5
+    bindsym $mod+Shift+6 move container to workspace number $ws6
+    bindsym $mod+Shift+7 move container to workspace number $ws7
+    bindsym $mod+Shift+8 move container to workspace number $ws8
+    bindsym $mod+Shift+9 move container to workspace number $ws9
+    bindsym $mod+Shift+0 move container to workspace number $ws10
+    bindsym $mod+Shift+semicolon move container to workspace prev
+    bindsym $mod+Shift+apostrophe move container to workspace next
+    bindsym $mod+Shift+Tab move container to workspace back_and_forth
+#+END_SRC
+
+** Set workspace 0 to be floating workspace
+#+BEGIN_SRC conf :tangle yes
+for_window [workspace="0"] floating enable
+#+END_SRC
+
+* Layout
+** split
+virtical: Mod+w
+#+BEGIN_SRC conf :tangle yes
+    bindsym $mod+w splitv
+#+END_SRC
+
+horizental: Mod+q
+#+BEGIN_SRC conf :tangle yes
+    bindsym $mod+q splith
+#+END_SRC
+
+these keybindings are binded to keys that are easy to reach as they will be used a lot
+** Switch the current container between different layout styles
+Tabbed: Mod+t
+Stacking: Mod+s
+Split: Mod+e
+#+BEGIN_SRC conf :tangle yes
+    bindsym $mod+s layout stacking
+    bindsym $mod+t layout tabbed
+    bindsym $mod+e layout toggle split
+#+END_SRC
+
+** Fullscreen
+Mod+n
+#+BEGIN_SRC conf :tangle yes
+    bindsym $mod+n fullscreen
+#+END_SRC
+
+** Floating and Sticky
+Mod+Shift+Space: Floating Toggle
+#+BEGIN_SRC conf :tangle yes
+    bindsym $mod+Shift+space floating toggle
+#+END_SRC
+
+Mod+Shift+s: Sticky Toggle
+#+BEGIN_SRC conf :tangle yes
+    bindsym $mod+Shift+s sticky toggle
+#+END_SRC
+
+Mod+Space: Swap focus between the tiling area and the floating area
+#+BEGIN_SRC conf :tangle yes
+    bindsym $mod+space focus mode_toggle
+#+END_SRC
+
+** Scratchpad
+Sway has a "scratchpad", which is a bag of holding for windows. You can send windows there and get them back later.
+
+Move the currently focused window to the scratchpad
+#+BEGIN_SRC conf :tangle yes
+bindsym $mod+Shift+minus move scratchpad
+#+END_SRC
+
+ Show the next scratchpad window or hide the focused scratchpad window. If there are multiple scratchpad windows, this command cycles through them.
+
+ #+BEGIN_SRC conf :tangle yes
+bindsym $mod+Mod1+return scratchpad show
+ #+END_SRC
+
+** Resizing Windows
+this mode resizes windows to your liking
+#+BEGIN_SRC conf :tangle yes
+  mode "resize" {
+      # left will shrink the containers width
+      # right will grow the containers width
+      # up will shrink the containers height
+      # down will grow the containers height
+      bindsym $left resize shrink width 10px
+      bindsym $down resize grow height 10px
+      bindsym $up resize shrink height 10px
+      bindsym $right resize grow width 10px
+
+      # Ditto, with arrow keys
+      bindsym Left resize shrink width 10px
+      bindsym Down resize grow height 10px
+      bindsym Up resize shrink height 10px
+      bindsym Right resize grow width 10px
+
+      # Return to default mode
+      bindsym Return mode "default"
+      bindsym Escape mode "default"
+  }
+  bindsym $mod+r mode "resize"
+#+END_SRC
+
+** Border Pixel
+this will set default border pixel, if this code is removed, the blue thing that is in tabbed mode will show every time
+#+BEGIN_SRC conf :tangle yes
+default_border pixel 2
+#+END_SRC
+
+* Bar
+this snippet configures Swaybar
+
+Dependency: Swaybar
+
+Read `man 5 sway-bar` for more information about this section.
+
+#+BEGIN_SRC conf :tangle yes
+bar {
+   ###### position top
+    status_command i3blocks
+    font Hack Bold 12pt
+    
+}
+#+END_SRC
+
+* Autostart
+Programs to autostart and environment variables to set will be listed here
+** Porgrams to autostart
+*These programs will be autostarted*
+- Emacs Daemon
+  #+BEGIN_SRC conf :tangle yes
+    exec --no-startup-id exec /home/light/.qolscripts/emacs-daemon.sh
+  #+END_SRC
+
+** Environment variables
+Environment variables will be set here
+
+Curtently None
+
+* User Made Keybindings
+** lsqol script to show qolscripts
+#+BEGIN_SRC conf :tangle yes
+bindsym $mod+g exec bash /home/light/.qolscripts/lsqol.sh
+#+END_SRC
+
+** launch emacs client
+#+BEGIN_SRC conf :tangle yes
+bindsym $mod+Shift+return exec emacsclient -c
+#+END_SRC
+
+** Firefox in wayland mode
+#+BEGIN_SRC conf :tangle yes
+bindsym $mod+f exec MOZ_ENABLE_WAYLAND=1 firefox
+#+END_SRC
+
+** Ranger file manager
+#+BEGIN_SRC conf :tangle yes
+bindsym $mod+Shift+d exec foot ranger
+#+END_SRC
+
+** Open different directories in sxiv
+Open ~/Pictures
+#+BEGIN_SRC conf :tangle yes
+bindsym $mod+Mod1+g exec sxiv -t ~/Pictures
+#+END_SRC
+
+Open ~/stuff/collectedpics
+#+BEGIN_SRC conf :tangle yes
+bindsym $mod+Mod1+h exec sxiv -t ~/stuff/collectedpics
+#+END_SRC
+
+** Night mode
+Start night mode
+#+BEGIN_SRC conf :tangle yes
+bindsym $mod+Mod1+c exec notify-send "Night Light ON" && gammastep -P -O 5000
+#+END_SRC
+
+Stop night mode
+#+BEGIN_SRC conf :tangle yes
+bindsym $mod+Mod1+x exec killall gammastep && notify-send "Night Light OFF"
+#+END_SRC
+
+* Gaps
+** Default gaps
+#+BEGIN_SRC conf :tangle yes
+# Set inner/outer gaps
+gaps inner 5
+#gaps outer 5
+#+END_SRC
+
+** smart gaps
+#+BEGIN_SRC conf :tangle yes
+smart_gaps on
+#+END_SRC
+
+** For smart border
+
+Additionally, you can issue commands with the following syntax. This is useful to bind keys to changing the gap size.
+
+gaps inner|outer current|all set|plus|minus <px>
+
+gaps inner all set 10
+
+gaps outer all plus 5
+
+Smart gaps (gaps used if only more than one container on the workspace)
+
+#+BEGIN_SRC conf :tangle yes
+smart_borders on
+#+END_SRC  
+
+** Modes to change gaps
+this snippet of code just works, IDK how
+
+#+BEGIN_SRC conf :tangle yes
+# Press $mod+Shift+g to enter the gap mode. Choose o or i for modifying outer/inner gaps. Press one of + / - (in-/decrement for current workspace) or 0 (remove gaps for current workspace). If you also press Shift with these keys, the change will be global for all workspaces.
+set $mode_gaps Gaps: (o) outer, (i) inner
+set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)
+set $mode_gaps_inner Inner Gaps: +|-|0 (local), Shift + +|-|0 (global)
+bindsym $mod+Shift+g mode "$mode_gaps"
+
+mode "$mode_gaps" {
+        bindsym o      mode "$mode_gaps_outer"
+        bindsym i      mode "$mode_gaps_inner"
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+mode "$mode_gaps_inner" {
+        bindsym plus  gaps inner current plus 5
+        bindsym minus gaps inner current minus 5
+        bindsym 0     gaps inner current set 0
+
+        bindsym Shift+plus  gaps inner all plus 5
+        bindsym Shift+minus gaps inner all minus 5
+        bindsym Shift+0     gaps inner all set 0
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+mode "$mode_gaps_outer" {
+        bindsym plus  gaps outer current plus 5
+        bindsym minus gaps outer current minus 5
+        bindsym 0     gaps outer current set 0
+
+        bindsym Shift+plus  gaps outer all plus 5
+        bindsym Shift+minus gaps outer all minus 5
+        bindsym Shift+0     gaps outer all set 0
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+#+END_SRC
+
+* Media Keys
+Pulse Audio controls
+#+BEGIN_SRC conf :tangle yes
+bindsym XF86AudioRaiseVolume exec --no-startup-id bash ~/.scripts/volctrl i
+bindsym XF86AudioLowerVolume exec --no-startup-id bash ~/.scripts/volctrl d
+bindsym XF86AudioMute exec --no-startup-id bash ~/.scripts/volctrl p
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute 0 toggle
+#+END_SRC
+
+Screeb brightness controls
+#+BEGIN_SRC conf :tangle yes
+bindsym $mod+XF86MonBrightnessUp exec brightnessctl set 5%+ 
+bindsym XF86MonBrightnessUp exec brightnessctl set 50+ 
+bindsym $mod+XF86MonBrightnessDown exec brightnessctl set 5%-
+bindsym XF86MonBrightnessDown exec brightnessctl set 50-
+#+END_SRC
+
+* Final
+** Set up sustemd Scripts
+#+BEGIN_SRC conf :tangle yes
+include /etc/sway/config.d/*
+#+END_SRC
